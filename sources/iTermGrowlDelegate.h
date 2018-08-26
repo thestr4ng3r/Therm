@@ -7,8 +7,7 @@
  **
  **  Project: iTerm
  **
- **  Description: Implements the delegate for Growl notifications. When
- **      available, Notifiation Center is used as a fallback.
+ **  Description: Implements the delegate for notifications using Notification Center.
  **
  **  Usage:
  **      In your class header file, add the following @class directive
@@ -32,9 +31,8 @@
  **
  **      Example usage:
  **
- **          [gd growlNotify: @"This is the title"
- **          withDescription: @"This is the description"
- **          andNotification: @"Bells"];
+ **          [gd notify: @"This is the title"
+ **          withDescription: @"This is the description"];
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -52,25 +50,18 @@
  */
 
 #import <Cocoa/Cocoa.h>
-#import <Growl/Growl.h>
 
-@interface iTermGrowlDelegate : NSObject <
-  GrowlApplicationBridgeDelegate,
+@interface iTermNotificationController : NSObject <
   NSUserNotificationCenterDelegate>
 
 + (instancetype)sharedInstance;
 
-// Generate a Growl message with no description and a notification type
-// of "Miscellaneous".
-- (void)growlNotify:(NSString *)title;
+// Generate a message with no description.
+- (void)notify:(NSString *)title;
 
-// Generate a Growl message with a notification type of "Miscellaneous".
-- (void)growlNotify:(NSString *)title withDescription:(NSString *)description;
-
-//  Generate a 'full' Growl message with a specified notification type.
-- (void)growlNotify:(NSString *)title
-    withDescription:(NSString *)description
-    andNotification:(NSString *)notification;
+//  Generate a 'full' message with a specified notification type.
+- (void)notify:(NSString *)title
+    withDescription:(NSString *)description;
 
 // Generate a 'full' Growl message with a specified notification type,
 // associated with a particular window/tab/view.
@@ -78,7 +69,6 @@
 // Returns YES if the notification was posted.
 - (BOOL)growlNotify:(NSString *)title
     withDescription:(NSString *)description
-    andNotification:(NSString *)notification
         windowIndex:(int)windowIndex
            tabIndex:(int)tabIndex
           viewIndex:(int)viewIndex;
@@ -86,7 +76,6 @@
 // Adds the sticky argument. Only works with Growl, not notification center.
 - (BOOL)growlNotify:(NSString *)title
     withDescription:(NSString *)description
-    andNotification:(NSString *)notification
         windowIndex:(int)windowIndex
            tabIndex:(int)tabIndex
           viewIndex:(int)viewIndex

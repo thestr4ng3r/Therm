@@ -7,8 +7,8 @@
  **
  **  Project: iTerm
  **
- **  Description: Implements the delegate for Growl notifications.
- **               See iTermGrowlDelegate.h for usage information.
+ **  Description: Implements the delegate for notifications.
+ **               See iTermNotificationController.h for usage information.
  **
  **  This program is free software; you can redistribute it and/or modify
  **  it under the terms of the GNU General Public License as published by
@@ -33,12 +33,11 @@
 #import "PTYSession.h"
 #import "PTYTab.h"
 
-#import <Growl/Growl.h>
+@interface iTermNotificationController ()
+- (void)notificationWasClicked:(id)clickContext;
+@end
 
-static NSString *const kGrowlAppName = @"iTerm";
-static NSString *const kDefaultNotification = @"Miscellaneous";
-
-@implementation iTermGrowlDelegate
+@implementation iTermNotificationController
 
 + (id)sharedInstance {
     static iTermGrowlDelegate *instance;
@@ -52,18 +51,8 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
 - (instancetype)init {
     self = [super init];
     if (self) {
-        NSBundle *myBundle = [NSBundle bundleForClass:[iTermGrowlDelegate class]];
-        NSString *growlPath =
-            [[myBundle privateFrameworksPath] stringByAppendingPathComponent:@"Growl.framework"];
-        NSBundle *growlBundle = [NSBundle bundleWithPath:growlPath];
-        if (growlBundle && [growlBundle load]) {
-            // Register ourselves as a Growl delegate
-            [GrowlApplicationBridge setGrowlDelegate:self];
-        } else {
-            NSLog(@"Could not load Growl.framework");
-        }
-
-        [self registrationDictionaryForGrowl];
+        // Register as delegate for notification center
+        [[NSUserNotificationCenter defaultUserNotificationCenter] setDelegate:self];
     }
     return self;
 }
@@ -72,19 +61,9 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
     [self growlNotify:title withDescription:nil];
 }
 
-- (void)growlNotify:(NSString *)title
-     withDescription:(NSString *)description {
-    [self growlNotify:title
-      withDescription:description
-      andNotification:kDefaultNotification];
-}
-
-- (void)growlNotify:(NSString *)title
-    withDescription:(NSString *)description
-    andNotification:(NSString *)notification {
-      [self growlNotify:title
+- (void)notify:(NSString *)title withDescription:(NSString *)description {
+      [self notify:title
         withDescription:description
-        andNotification:notification
             windowIndex:-1
                tabIndex:-1
               viewIndex:-1];
@@ -92,13 +71,11 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
 
 - (BOOL)growlNotify:(NSString *)title
     withDescription:(NSString *)description
-    andNotification:(NSString *)notification
         windowIndex:(int)windowIndex
            tabIndex:(int)tabIndex
           viewIndex:(int)viewIndex {
     return [self growlNotify:title
              withDescription:description
-             andNotification:notification
                  windowIndex:windowIndex
                     tabIndex:tabIndex
                    viewIndex:viewIndex
@@ -107,11 +84,12 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
 
 - (BOOL)growlNotify:(NSString *)title
     withDescription:(NSString *)description
-    andNotification:(NSString *)notification
         windowIndex:(int)windowIndex
            tabIndex:(int)tabIndex
           viewIndex:(int)viewIndex
              sticky:(BOOL)sticky {
+    DLog(@"Notify title=%@ description=%@ window=%@ tab=%@ view=%@ sticky=%@",
+         title, description, @(windowIndex), @(tabIndex), @(viewIndex), @(sticky));
     NSDictionary *context = nil;
     if (windowIndex >= 0) {
         context = @{ @"win": @(windowIndex),
@@ -119,17 +97,21 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
                      @"view": @(viewIndex) };
     }
 
-    [GrowlApplicationBridge notifyWithTitle:title
-                                description:description
-                           notificationName:notification
-                                   iconData:nil
-                                   priority:0
-                                   isSticky:sticky
-                               clickContext:context];
+    // Send to NSUserDefaults directly
+    // The (BOOL)sticky parameter is ignored
+    NSUserNotification *notification = [[[NSUserNotification alloc] init] autorelease];
+    notification.title = title;
+    notification.informativeText = description;
+    notification.userInfo = context;
+    notification.soundName = NSUserNotificationDefaultSoundName;
+    DLog(@"Post notification %@", notification);
+    [[NSUserNotificationCenter defaultUserNotificationCenter] deliverNotification:notification];
+
     return YES;
 }
 
-- (void)growlNotificationWasClicked:(id)clickContext {
+- (void)notificationWasClicked:(id)clickContext {
+    DLog(@"notificationWasClicked:%@", clickContext);
     int win = [clickContext[@"win"] intValue];
     int tab = [clickContext[@"tab"] intValue];
     int view = [clickContext[@"view"] intValue];
@@ -150,21 +132,17 @@ static NSString *const kDefaultNotification = @"Miscellaneous";
     [theSession reveal];
 }
 
-- (NSDictionary *)registrationDictionaryForGrowl {
-    NSArray *notifications = @[ @"Bells",
-                                @"Broken Pipes",
-                                @"Miscellaneous",
-                                @"Idle",
-                                @"New Output",
-                                @"Customized Message",
-                                @"Mark Set" ];
-    return @{ GROWL_APP_NAME: kGrowlAppName,
-              GROWL_NOTIFICATIONS_ALL: notifications,
-              GROWL_NOTIFICATIONS_DEFAULT: notifications };
+#pragma mark Notifications Delegate Methods
+
+- (BOOL)userNotificationCenter:(NSUserNotificationCenter *)center shouldPresentNotification:(NSUserNotification *)notification
+{
+    return YES;
 }
 
-- (void)growlIsReady {
-    NSLog(@"Growl is ready");
+- (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification
+{
+    [self notificationWasClicked:notification.userInfo];
+    [center removeDeliveredNotification:notification];
 }
 
 @end
