@@ -7,7 +7,7 @@
 #import "VT100Token.h"
 
 @class DVR;
-@class iTermGrowlDelegate;
+// @class iTermGrowlDelegate;
 @class iTermMark;
 @class iTermStringLine;
 @class LineBuffer;

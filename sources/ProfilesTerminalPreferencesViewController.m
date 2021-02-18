@@ -130,7 +130,7 @@
                            key:KEY_BOOKMARK_USER_NOTIFICATIONS
                           type:kPreferenceInfoTypeCheckbox];
     info.observer = ^() {
-        BOOL sendNotifications = [self boolForKey:KEY_BOOKMARK_GROWL_NOTIFICATIONS];
+        BOOL sendNotifications = NO; //[self boolForKey:KEY_BOOKMARK_GROWL_NOTIFICATIONS];
         [_filterAlertsButton setEnabled:sendNotifications];
     };
 

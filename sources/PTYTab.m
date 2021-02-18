@@ -4578,11 +4578,13 @@ static void SetAgainstGrainDim(BOOL isVertical, NSSize *dest, CGFloat value) {
                             [session name],
                             [self tabNumber]];
                     if ([iTermProfilePreferences boolForKey:KEY_SEND_IDLE_ALERT inProfile:session.profile]) {
+#if 0
                         [[iTermGrowlDelegate sharedInstance] growlNotify:@"Idle"
                                                          withDescription:theDescription
                                                              windowIndex:[session screenWindowIndex]
                                                                 tabIndex:[session screenTabIndex]
                                                                viewIndex:[session screenViewIndex]];
+#endif
                     }
                     session.havePostedIdleNotification = YES;
                     session.havePostedNewOutputNotification = NO;
@@ -4615,6 +4617,7 @@ static void SetAgainstGrainDim(BOOL isVertical, NSSize *dest, CGFloat value) {
         notify &&
         [[NSDate date] timeIntervalSinceDate:[SessionView lastResizeDate]] > POST_WINDOW_RESIZE_SILENCE_SEC) {
         if ([iTermProfilePreferences boolForKey:KEY_SEND_NEW_OUTPUT_ALERT inProfile:self.activeSession.profile]) {
+#if 0
             [[iTermGrowlDelegate sharedInstance] growlNotify:NSLocalizedStringFromTableInBundle(@"New Output",
                                                                                                 @"iTerm",
                                                                                                 [NSBundle bundleForClass:[self class]],
@@ -4625,6 +4628,7 @@ static void SetAgainstGrainDim(BOOL isVertical, NSSize *dest, CGFloat value) {
                                                  windowIndex:[[self activeSession] screenWindowIndex]
                                                     tabIndex:[[self activeSession] screenTabIndex]
                                                    viewIndex:[[self activeSession] screenViewIndex]];
+#endif
         }
         [[self activeSession] setHavePostedNewOutputNotification:YES];
         [[self activeSession] setHavePostedIdleNotification:NO];

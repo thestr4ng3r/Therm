@@ -200,7 +200,9 @@ static NSString *const kInilineFileInset = @"inset";  // NSValue of NSEdgeInsets
         [self setInitialTabStops];
         linebuffer_ = [[LineBuffer alloc] init];
 
+#if 0
         [iTermGrowlDelegate sharedInstance];
+#endif
 
         dvr_ = [DVR alloc];
         [dvr_ initWithBufferCapacity:[iTermPreferences intForKey:kPreferenceKeyInstantReplayMemoryMegabytes] * 1024 * 1024];
@@ -3025,6 +3027,7 @@ return;
                                     [delegate_ screenName],
                                     [delegate_ screenNumber],
                                     message];
+#if 0
         BOOL sent = [[iTermGrowlDelegate sharedInstance]
                         growlNotify:@"Alert"
                         withDescription:description
@@ -3032,6 +3035,9 @@ return;
                                tabIndex:[delegate_ screenTabIndex]
                               viewIndex:[delegate_ screenViewIndex]];
         return sent;
+#else
+        return NO;
+#endif
     } else {
         return NO;
     }

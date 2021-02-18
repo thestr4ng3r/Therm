@@ -6,7 +6,7 @@
 //
 
 #import "iTermUserNotificationTrigger.h"
-#import "iTermNotificationController.h"
+//#import "iTermNotificationController.h"
 #import "PTYSession.h"
 #import "PTYTab.h"
 
@@ -22,7 +22,7 @@
     return YES;
 }
 
-- (NSString *)paramPlaceholder
+/*- (NSString *)paramPlaceholder
 {
     return @"Enter Message";
 }
@@ -43,6 +43,6 @@
            tabIndex:[aSession screenTabIndex]
           viewIndex:[aSession screenViewIndex]];
     return YES;
-}
+}*/
 
 @end

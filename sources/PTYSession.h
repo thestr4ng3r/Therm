@@ -45,7 +45,7 @@ extern NSString *const PTYSessionRevivedNotification;
 @class iTermColorMap;
 @class iTermCommandHistoryCommandUseMO;
 @class iTermController;
-@class iTermGrowlDelegate;
+// @class iTermGrowlDelegate;
 @class iTermPromptOnCloseReason;
 @class iTermQuickLookController;
 @class SessionView;

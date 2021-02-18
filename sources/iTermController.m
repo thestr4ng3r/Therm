@@ -124,7 +124,7 @@ static iTermController *gSharedInstance;
         _terminalWindows = [[NSMutableArray alloc] init];
         _restorableSessions = [[NSMutableArray alloc] init];
         _currentRestorableSessionsStack = [[NSMutableArray alloc] init];
-        [iTermNotificationController sharedInstance];
+        // [iTermNotificationController sharedInstance];
 
         [[[NSWorkspace sharedWorkspace] notificationCenter] addObserver:self
                                                                selector:@selector(workspaceWillPowerOff:)

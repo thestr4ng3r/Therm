@@ -178,7 +178,7 @@ ITERM_IGNORE_PARTIAL_BEGIN
                                     [word stringWithEscapedShellCharactersIncludingNewlines:YES]];
             button.keyBindingAction = @{ @"command": manCommand };
 ////
-if (0) {
+#if 0
         iTermTouchBarButton *b = [iTermTouchBarButton buttonWithTitle:@"i" target:self action:@selector(functionKeyTouchBarItemSelected:)];
         b.tag = 2;
         [b sizeToFit];
@@ -186,7 +186,7 @@ if (0) {
         b.translatesAutoresizingMaskIntoConstraints = NO;
         [self addConstraintsToButton:b superView:[b view] previous:nil];
 }
-////
+#endif
         }
         return;
     }

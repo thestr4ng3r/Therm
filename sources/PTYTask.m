@@ -606,8 +606,9 @@ static int MyForkPty(int *amaster,
     } else if (pid < (pid_t)0) {
         // Error
         DLog(@"Unable to fork %@: %s", progpath, strerror(errno));
+#if 0
         [[iTermGrowlDelegate sharedInstance] growlNotify:@"Unable to fork!" withDescription:@"You may have too many processes already running."];
-        
+#endif
         for (int j = 0; newEnviron[j]; j++) {
             free(newEnviron[j]);
         }

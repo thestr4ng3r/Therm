@@ -7511,6 +7511,7 @@ verticalSpacing:(float)verticalSpacing {
     if (self.alertOnNextMark) {
         NSString *action = [iTermApplication.sharedApplication delegate].markAlertAction;
         if ([action isEqualToString:kMarkAlertActionPostNotification]) {
+#if 0
             [[iTermGrowlDelegate sharedInstance] growlNotify:@"Mark Set"
                                              withDescription:[NSString stringWithFormat:@"Session %@ #%d had a mark set.",
                                                               [self name],
@@ -7520,6 +7521,7 @@ verticalSpacing:(float)verticalSpacing {
                                                     tabIndex:[self screenTabIndex]
                                                    viewIndex:[self screenViewIndex]
                                                       sticky:YES];
+#endif
         } else {
             NSAlert *alert = [[[NSAlert alloc] init] autorelease];
             alert.messageText = @"Alert";
