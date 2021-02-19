@@ -2388,7 +2388,6 @@
 		0464AB2F006CD2EC7F000001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		06E0C88C1DF9695400AA061B /* iTermServiceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermServiceProvider.h; sourceTree = "<group>"; };
 		06E0C88D1DF9695400AA061B /* iTermServiceProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermServiceProvider.m; sourceTree = "<group>"; };
-		17B49F7525DEA64C00CA0649 /* ColorPicker.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = ColorPicker.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		17B49F7B25DEA6EC00CA0649 /* ColorPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ColorPicker.xcodeproj; path = ColorPicker/ColorPicker.xcodeproj; sourceTree = "<group>"; };
 		1D027C0F1CD1867000B0FBFF /* iTermColorPresets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermColorPresets.h; sourceTree = "<group>"; };
 		1D027C101CD1867000B0FBFF /* iTermColorPresets.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = iTermColorPresets.m; sourceTree = "<group>"; };
@@ -4760,7 +4759,6 @@
 		1DD39AD5180B8118004E56D5 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				17B49F7525DEA64C00CA0649 /* ColorPicker.framework */,
 				2F8A16C31FC333F800DFBE8F /* libncurses.tbd */,
 				A656AE4B1DBBE1CE00CE8448 /* libaprutil-1.tbd */,
 				1DEB293D1288899A00B2CB9F /* Carbon.framework */,
@@ -8339,7 +8337,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				SDKROOT = macosx;
-				VALID_ARCHS = "i386 x86_64";
+				VALID_ARCHS = arm64;
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Nightly;
@@ -8392,7 +8390,6 @@
 				PRODUCT_NAME = Therm;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -8459,7 +8456,6 @@
 				PRODUCT_NAME = ThermForApplescriptTesting;
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -8521,7 +8517,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.googlecode.iterm2.applescript;
 				PRODUCT_NAME = ThermForApplescriptTesting;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -8581,7 +8576,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.googlecode.iterm2.applescript;
 				PRODUCT_NAME = ThermForApplescriptTesting;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -8722,7 +8716,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.google.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wno-shorten-64-to-32",
@@ -8788,7 +8781,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.google.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wall",
 					"-Wno-shorten-64-to-32",
@@ -8892,7 +8884,6 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 			};
 			name = Deployment;
 		};
@@ -8940,7 +8931,6 @@
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 			};
 			name = Nightly;
 		};
@@ -9432,7 +9422,6 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SECTORDER_FLAGS = "";
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -9494,7 +9483,6 @@
 				PRODUCT_NAME = Therm;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
 				WARNING_CFLAGS = (
 					"-Wextra",
 					"-Wall",
@@ -9553,7 +9541,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				VALID_ARCHS = x86_64;
+				VALID_ARCHS = arm64;
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Development;
@@ -9597,7 +9585,7 @@
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				SDKROOT = macosx;
-				VALID_ARCHS = "x86_64 i386";
+				VALID_ARCHS = arm64;
 				WARNING_CFLAGS = "-Wall";
 			};
 			name = Deployment;
