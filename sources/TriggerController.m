@@ -31,8 +31,6 @@
 #import "StopTrigger.h"
 #import "Trigger.h"
 
-#import <ColorPicker/ColorPicker.h>
-
 static NSString *const kiTermTriggerControllerPasteboardType =
     @"kiTermTriggerControllerPasteboardType";
 
@@ -40,7 +38,7 @@ static NSString *const kRegexColumnIdentifier = @"kRegexColumnIdentifier";
 static NSString *const kParameterColumnIdentifier = @"kParameterColumnIdentifier";
 static NSString *const kTextColorWellIdentifier = @"kTextColorWellIdentifier";
 static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellIdentifier";
-
+#if 0
 // This is a color well that continues to work after it's removed from the view
 // hierarchy. NSTableView likes to randomly remove its views, so a regular
 // CPKColorWell won't work properly. A popover gets angry if its presenting
@@ -62,12 +60,15 @@ static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellId
 }
 
 @end
+#endif
 
 @interface TriggerController() <NSTextFieldDelegate>
 // Keeps the color well whose popover is currently open from getting
 // deallocated. It may get removed from the view hierarchy but we need it to
 // continue existing so we can get the color out of it.
+#if 0
 @property(nonatomic, retain) iTermColorWell *activeWell;
+#endif
 @end
 
 @implementation TriggerController {
@@ -410,6 +411,7 @@ static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellId
                 [container addSubview:label];
                 x += label.frame.size.width;
                 const CGFloat kWellWidth = 30;
+#if 0
                 iTermColorWell *well =
                     [[[iTermColorWell alloc] initWithFrame:NSMakeRect(x,
                                                                       0,
@@ -456,7 +458,7 @@ static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellId
                         self.activeWell = nil;
                     }
                 };
-
+#endif
                 return container;
             } else if ([trigger paramIsPopupButton]) {
                 NSPopUpButton *popUpButton = [[[NSPopUpButton alloc] init] autorelease];
@@ -557,7 +559,7 @@ static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellId
 - (IBAction)help:(id)sender {
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://www.iterm2.com/triggers.html"]];
 }
-
+#if 0
 - (void)colorWellDidChange:(CPKColorWell *)colorWell {
     NSArray *triggerDicts = [self triggerDictionariesForCurrentProfile];
     NSInteger row = colorWell.tag;
@@ -583,6 +585,7 @@ static NSString *const kBackgroundColorWellIdentifier = @"kBackgroundColorWellId
     // appearing correctly.
     [self setTriggerDictionary:triggerDictionary forRow:row reloadData:NO];
 }
+#endif
 
 - (void)instantDidChange:(NSButton *)checkbox {
     NSNumber *newValue = checkbox.state == NSOnState ? @(YES) : @(NO);

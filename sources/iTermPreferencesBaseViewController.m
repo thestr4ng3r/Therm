@@ -14,8 +14,6 @@
 #import "NSTextField+iTerm.h"
 #import "PreferencePanel.h"
 
-#import <ColorPicker/ColorPicker.h>
-
 static NSString *const kPreferenceDidChangeFromOtherPanel = @"kPreferenceDidChangeFromOtherPanel";
 
 // key for userInfo dictionary of kPreferenceDidChangeFromOtherPanel notification having
@@ -376,6 +374,7 @@ return NULL;
             assert(false);  // Must use onChange() only.
 
         case kPreferenceInfoTypeColorWell: {
+#if 0
             assert([info.control isKindOfClass:[CPKColorWell class]]);
             CPKColorWell *colorWell = (CPKColorWell *)info.control;
             NSDictionary *dict = (NSDictionary *)[self objectForKey:info.key];
@@ -383,6 +382,7 @@ return NULL;
                 assert([dict isKindOfClass:[NSDictionary class]]);
                 [colorWell setColor:[dict colorValue]];
             }
+#endif
             break;
         }
 

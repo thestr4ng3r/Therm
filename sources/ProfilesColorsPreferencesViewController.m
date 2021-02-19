@@ -15,11 +15,14 @@
 #import "NSTextField+iTerm.h"
 #import "PreferencePanel.h"
 
+#if 0
 #import <ColorPicker/ColorPicker.h>
+#endif
 
 static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery";
 
 @implementation ProfilesColorsPreferencesViewController {
+#if 0
     IBOutlet CPKColorWell *_ansi0Color;
     IBOutlet CPKColorWell *_ansi1Color;
     IBOutlet CPKColorWell *_ansi2Color;
@@ -47,6 +50,7 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
     IBOutlet CPKColorWell *_tabColor;
     IBOutlet CPKColorWell *_underlineColor;
     IBOutlet CPKColorWell *_badgeColor;
+#endif
 
     IBOutlet NSTextField *_cursorColorLabel;
     IBOutlet NSTextField *_cursorTextColorLabel;
@@ -61,7 +65,9 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
     IBOutlet NSMenu *_presetsMenu;
 
     IBOutlet NSButton *_useGuide;
+#if 0
     IBOutlet CPKColorWell *_guideColor;
+#endif
 
     IBOutlet NSPopUpButton *_presetsPopupButton;
 }
@@ -118,6 +124,7 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
     // Add presets to preset color selection.
     [self rebuildColorPresetsMenu];
 
+#if 0
     NSDictionary *colorWellDictionary = [self colorWellDictionary];
     for (NSString *key in colorWellDictionary) {
         CPKColorWell *colorWell = colorWellDictionary[key];
@@ -138,6 +145,7 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
             [unsafeView.window makeFirstResponder:nil];
         };
     }
+#endif
 
     PreferenceInfo *info;
 
@@ -172,14 +180,17 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
 }
 
 - (void)updateColorControlsEnabled {
+#if 0
     _tabColor.enabled = [self boolForKey:KEY_USE_TAB_COLOR];
     _underlineColor.enabled = [self boolForKey:KEY_USE_UNDERLINE_COLOR];
     _cursorColor.enabled = ![self boolForKey:KEY_SMART_CURSOR_COLOR];
     _cursorTextColor.enabled = ![self boolForKey:KEY_SMART_CURSOR_COLOR];
     _cursorColorLabel.labelEnabled = ![self boolForKey:KEY_SMART_CURSOR_COLOR];
     _cursorTextColorLabel.labelEnabled = ![self boolForKey:KEY_SMART_CURSOR_COLOR];
+#endif
 }
 
+#if 0
 - (NSDictionary *)colorWellDictionary {
     return @{ KEY_ANSI_0_COLOR: _ansi0Color,
               KEY_ANSI_1_COLOR: _ansi1Color,
@@ -210,6 +221,7 @@ static NSString * const kColorGalleryURL = @"https://www.iterm2.com/colorgallery
               KEY_CURSOR_GUIDE_COLOR: _guideColor,
               KEY_BADGE_COLOR: _badgeColor };
 }
+#endif
 
 #pragma mark - Color Presets
 
