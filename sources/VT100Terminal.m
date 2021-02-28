@@ -1732,10 +1732,10 @@ static const int kMaxScreenRows = 4096;
             // [delegate_ terminalRaise:NO];
             break;
         case XTERMCC_SU:
-            // [delegate_ terminalScrollUp:token.csi->p[0]];
+            [delegate_ terminalScrollUp:token.csi->p[0]];
             break;
         case XTERMCC_SD:
-#if 0
+#if 1
             if (token.csi->count == 1) {
                 [delegate_ terminalScrollDown:token.csi->p[0]];
             }
