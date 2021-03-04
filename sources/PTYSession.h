@@ -709,12 +709,6 @@ typedef enum {
 - (void)triggerDidDetectStartOfPromptAt:(VT100GridAbsCoord)coord;
 - (void)triggerDidDetectEndOfPromptAt:(VT100GridAbsCoord)coord;
 
-// Burys a session
-- (void)bury;
-
-// Undoes burying of a session.
-- (void)disinter;
-
 - (void)jumpToLocationWhereCurrentStatusChanged;
 /*
 #pragma mark - API

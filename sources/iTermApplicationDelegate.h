@@ -70,7 +70,6 @@ extern NSString *const iTermApplicationWillTerminate;
 - (void)userDidInteractWithASession;
 
 - (void)openPasswordManagerToAccountName:(NSString *)name inSession:(PTYSession *)session;
-- (void)updateBuriedSessionsMenu;
 - (void)postAPINotification:(ITMNotification *)notification toConnection:(id)connection;
 
 #pragma mark - Actions

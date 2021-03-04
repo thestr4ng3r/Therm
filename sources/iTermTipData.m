@@ -260,9 +260,6 @@
             @"0070": @{ kTipTitleKey: @"Double-Tap Hotkey",
                         kTipBodyKey: @"New in 3.1: You can configure a hotkey window to open on double-tap of a modifier in “Prefs > Profiles > Keys > Customize Hotkey Window.”" },
 
-            @"0071": @{ kTipTitleKey: @"Buried Sessions",
-                        kTipBodyKey: @"You can “bury” a session with “Session > Bury Session.” It remains hidden until you restore it by selecting it from “Session > Buried Sessions > Your session.”" },
-
             };
 }
 

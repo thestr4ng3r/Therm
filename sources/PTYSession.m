@@ -11,7 +11,6 @@
 #import "iTermApplication.h"
 #import "iTermApplicationDelegate.h"
 #import "iTermAutomaticProfileSwitcher.h"
-#import "iTermBuriedSessions.h"
 #import "iTermCarbonHotKeyController.h"
 #import "iTermColorMap.h"
 #import "iTermColorPresets.h"
@@ -4804,10 +4803,6 @@ verticalSpacing:(float)verticalSpacing {
     [_textview findContext].substring != nil;
 }
 
-- (void)hideSession {
-    [self bury];
-}
-
 - (NSString *)preferredTmuxClientName {
     return _name;
 #if 0
@@ -5089,14 +5084,6 @@ verticalSpacing:(float)verticalSpacing {
 - (void)tmuxDidOpenInitialWindows {
     if (_hideAfterTmuxWindowOpens) {
         _hideAfterTmuxWindowOpens = NO;
-        [self hideSession];
-        
-        static NSString *const kAutoBurialKey = @"NoSyncAutoBurialReveal";
-        if (![[NSUserDefaults standardUserDefaults] boolForKey:kAutoBurialKey]) {
-            [iTermMenuOpener revealMenuWithPath:@[ @"Session", @"Buried Sessions" ]
-                                        message:@"The session that started tmux has been hidden.\nYou can restore it here, in “Buried Sessions.”"];
-            [[NSUserDefaults standardUserDefaults] setBool:YES forKey:kAutoBurialKey];
-        }
     }
 }
 - (void)tmuxUpdateLayoutForWindow:(int)windowId
@@ -5172,11 +5159,6 @@ verticalSpacing:(float)verticalSpacing {
         [dcsID release];
     });
     self.tmuxMode = TMUX_NONE;
-    
-    if ([iTermPreferences boolForKey:kPreferenceKeyAutoHideTmuxClientSession] &&
-        [[[iTermBuriedSessions sharedInstance] buriedSessions] containsObject:self]) {
-        [[iTermBuriedSessions sharedInstance] restoreSession:self];
-    }
 }
 
 - (void)tmuxCannotSendCharactersInSupplementaryPlanes:(NSString *)string windowPane:(int)windowPane {
@@ -6767,10 +6749,6 @@ verticalSpacing:(float)verticalSpacing {
     [_delegate sessionBackgroundColorDidChange:self];
 }
 
-- (void)textViewBurySession {
-    [self bury];
-}
-
 - (void)textViewShowHoverURL:(NSString *)url {
     [_view setHoverURL:url];
 }
@@ -6797,15 +6775,6 @@ verticalSpacing:(float)verticalSpacing {
         _copyModeState.start = range.end;
         [self.textview setNeedsDisplay:YES];
     }
-}
-
-- (void)bury {
-    [_textview setDataSource:nil];
-    [_textview setDelegate:nil];
-    [[iTermBuriedSessions sharedInstance] addBuriedSession:self];
-    [_delegate sessionRemoveSession:self];
-    
-    _delegate = nil;
 }
 
 - (void)sendEscapeSequence:(NSString *)text
@@ -7385,9 +7354,6 @@ verticalSpacing:(float)verticalSpacing {
 
 - (void)reveal {
     DLog(@"Reveal session %@", self);
-    if ([[[iTermBuriedSessions sharedInstance] buriedSessions] containsObject:self]) {
-        [[iTermBuriedSessions sharedInstance] restoreSession:self];
-    }
     NSWindowController<iTermWindowController> *terminal = [_delegate realParentWindow];
     iTermController *controller = [iTermController sharedInstance];
     BOOL okToActivateApp = YES;

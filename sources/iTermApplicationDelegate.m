@@ -34,7 +34,6 @@
 #import "iTermAboutWindowController.h"
 #import "iTermAppHotKeyProvider.h"
 #import "iTermAdvancedSettingsModel.h"
-#import "iTermBuriedSessions.h"
 #import "iTermColorPresets.h"
 #import "iTermController.h"
 #import "iTermDisclosableView.h"
@@ -107,7 +106,6 @@ static NSString *const kScreenCharRestorableStateKey = @"kScreenCharRestorableSt
 static NSString *const kURLStoreRestorableStateKey = @"kURLStoreRestorableStateKey";
 static NSString *const kHotkeyWindowRestorableState = @"kHotkeyWindowRestorableState";  // deprecated
 static NSString *const kHotkeyWindowsRestorableStates = @"kHotkeyWindowsRestorableState";  // deprecated
-static NSString *const iTermBuriedSessionState = @"iTermBuriedSessionState";
 
 static NSString *const kHaveWarnedAboutIncompatibleSoftware = @"NoSyncHaveWarnedAboutIncompatibleSoftware";
 
@@ -154,7 +152,6 @@ static BOOL hasBecomeActive = NO;
     IBOutlet NSMenuItem *irPrev;
    // IBOutlet NSMenuItem *windowArrangements_;
     IBOutlet NSMenuItem *windowArrangementsAsTabs_;
-    IBOutlet NSMenu *_buriedSessions;
 
     IBOutlet NSMenuItem *showFullScreenTabs;
     IBOutlet NSMenuItem *useTransparency;
@@ -186,7 +183,6 @@ static BOOL hasBecomeActive = NO;
 
     BOOL _orphansAdopted;  // Have orphan servers been adopted?
 
-    NSArray<NSDictionary *> *_buriedSessionsState;
     /*
     NSMutableDictionary<id, ITMNotificationRequest *> *_newSessionSubscriptions;
     NSMutableDictionary<id, ITMNotificationRequest *> *_terminateSessionSubscriptions;
@@ -447,18 +443,8 @@ static BOOL hasBecomeActive = NO;
     }
 }
 
-- (void)updateBuriedSessionsMenu {
-    [_buriedSessions removeAllItems];
-    for (PTYSession *session in [[iTermBuriedSessions sharedInstance] buriedSessions]) {
-        NSMenuItem *item = [[[NSMenuItem alloc] initWithTitle:session.name action:@selector(disinter:) keyEquivalent:@""] autorelease];
-        item.representedObject = session;
-        [_buriedSessions addItem:item];
-    }
-}
-
 - (void)disinter:(NSMenuItem *)menuItem {
     PTYSession *session = menuItem.representedObject;
-    [[iTermBuriedSessions sharedInstance] restoreSession:session];
 }
 
 - (PseudoTerminal *)currentTerminal {
@@ -788,9 +774,6 @@ static BOOL hasBecomeActive = NO;
                      forKey:kHotkeyWindowsRestorableStates];
     }
 
-    if ([[[iTermBuriedSessions sharedInstance] buriedSessions] count]) {
-        [coder encodeObject:[[iTermBuriedSessions sharedInstance] restorableState] forKey:iTermBuriedSessionState];
-    }
     DLog(@"Time to save app restorable state: %@",
          @([NSDate timeIntervalSinceReferenceDate] - start));
 }
@@ -827,16 +810,11 @@ static BOOL hasBecomeActive = NO;
             }
         }
     }
-    _buriedSessionsState = [[coder decodeObjectForKey:iTermBuriedSessionState] retain];
-    if (finishedLaunching_) {
-        [self restoreBuriedSessionsState];
-    }
     if ([iTermAdvancedSettingsModel logRestorableStateSize]) {
         NSDictionary *dict = @{ kScreenCharRestorableStateKey: screenCharState ?: @{},
                                 kURLStoreRestorableStateKey: urlStoreState ?: @{},
                                 kHotkeyWindowsRestorableStates: hotkeyWindowsStates ?: @[],
-                                kHotkeyWindowRestorableState: legacyState ?: @{},
-                                iTermBuriedSessionState: _buriedSessionsState ?: @[] };
+                                kHotkeyWindowRestorableState: legacyState ?: @{} };
         NSString *log = [dict sizeInfo];
         [log writeToFile:[NSString stringWithFormat:@"/tmp/statesize.app-%p.txt", self] atomically:NO encoding:NSUTF8StringEncoding error:nil];
     }
@@ -1029,8 +1007,6 @@ static BOOL hasBecomeActive = NO;
                                              selector:@selector(dynamicToolsDidChange:)
                                                  name:kDynamicToolsDidChange
                                                object:nil];
-
-    [self restoreBuriedSessionsState];
 }
 
 - (NSMenu *)statusBarMenu {
@@ -1305,8 +1281,7 @@ static BOOL hasBecomeActive = NO;
                    ![PseudoTerminalRestorer willOpenWindows] &&
                    [[[iTermController sharedInstance] terminals] count] == 0 &&
                    ![self isApplescriptTestApp] &&
-                   [[[iTermHotKeyController sharedInstance] profileHotKeys] count] == 0 &&
-                   [[[iTermBuriedSessions sharedInstance] buriedSessions] count] == 0) {
+                   [[[iTermHotKeyController sharedInstance] profileHotKeys] count] == 0) {
             [self newWindow:nil];
         }
     }
@@ -2190,14 +2165,6 @@ static BOOL hasBecomeActive = NO;
                 [window close];
             }
         }
-    }
-}
-
-- (void)restoreBuriedSessionsState {
-    if (_buriedSessionsState) {
-        [[iTermBuriedSessions sharedInstance] restoreFromState:_buriedSessionsState];
-        [_buriedSessionsState release];
-        _buriedSessionsState = nil;
     }
 }
 

@@ -184,7 +184,6 @@ typedef NS_ENUM(NSInteger, PTYTextViewSelectionExtensionUnit) {
 
 // Describes the current user, host, and path.
 - (NSURL *)textViewCurrentLocation;
-- (void)textViewBurySession;
 - (void)textViewShowHoverURL:(NSString *)url;
 
 - (BOOL)textViewCopyMode;

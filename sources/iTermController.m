@@ -32,7 +32,6 @@
 #import "ITAddressBookMgr.h"
 #import "iTermAdvancedSettingsModel.h"
 #import "iTermApplication.h"
-#import "iTermBuriedSessions.h"
 #import "iTermHotKeyController.h"
 #import "NSArray+iTerm.h"
 #import "NSFileManager+iTerm.h"
@@ -207,11 +206,6 @@ static iTermController *gSharedInstance;
             if ([session isTmuxClient] || [session isTmuxGateway]) {
                 return session;
             }
-        }
-    }
-    for (PTYSession *session in [[iTermBuriedSessions sharedInstance] buriedSessions]) {
-        if ([session isTmuxClient] || [session isTmuxGateway]) {
-            return session;
         }
     }
     return nil;
