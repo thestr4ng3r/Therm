@@ -235,41 +235,7 @@ static void HandleSigChld(int n) {
 }
 
 - (BOOL)tryToAttachToServerWithProcessId:(pid_t)thePid {
-    if (![iTermAdvancedSettingsModel runJobsInServers]) {
-        return NO;
-    }
-    if (_serverChildPid != -1) {
-        return NO;
-    }
-
-    // TODO: This server code is super scary so I'm NSLog'ing it to make it easier to recover
-    // logs. These should eventually become DLog's and the log statements in the server should
-    // become LOG_DEBUG level.
-    NSLog(@"tryToAttachToServerWithProcessId: Attempt to connect to server for pid %d", (int)thePid);
-    iTermFileDescriptorServerConnection serverConnection = iTermFileDescriptorClientRun(thePid);
-    if (!serverConnection.ok) {
-        NSLog(@"Failed with error %s", serverConnection.error);
-        return NO;
-    } else {
-        NSLog(@"Succeeded.");
-        [self attachToServer:serverConnection];
-
-        // Prevent any future attempt to connect to this server as an orphan.
-        char buffer[PATH_MAX + 1];
-        iTermFileDescriptorSocketPath(buffer, sizeof(buffer), thePid);
-        [[iTermOrphanServerAdopter sharedInstance] removePath:[NSString stringWithUTF8String:buffer]];
-
-        return YES;
-    }
-}
-
-- (void)attachToServer:(iTermFileDescriptorServerConnection)serverConnection {
-    assert([iTermAdvancedSettingsModel runJobsInServers]);
-    fd = serverConnection.ptyMasterFd;
-    _serverPid = serverConnection.serverPid;
-    _serverChildPid = serverConnection.childPid;
-    _socketFd = serverConnection.socketFd;
-    [[TaskNotifier sharedInstance] registerTask:self];
+    return NO;
 }
 
 // Like login_tty but makes fd 0 the master, fd 1 the slave, fd 2 an open unix-domain socket
@@ -325,46 +291,6 @@ static void MyLoginTTY(int master, int slave, int serverSocketFd, int deadMansPi
     for (int i = 0; i < sizeof(orig) / sizeof(*orig); i++) {
         dup2(temp[i], i);
         close(temp[i]);
-    }
-}
-
-// Just like forkpty but fd 0 the master and fd 1 the slave.
-static int MyForkPty(int *amaster,
-                     char *name,
-                     struct termios *termp,
-                     struct winsize *winp,
-                     int serverSocketFd,
-                     int deadMansPipeWriteEnd) {
-    assert([iTermAdvancedSettingsModel runJobsInServers]);
-    int master;
-    int slave;
-
-    iTermFileDescriptorServerLog("Calling openpty");
-    if (openpty(&master, &slave, name, termp, winp) == -1) {
-        NSLog(@"openpty failed: %s", strerror(errno));
-        return -1;
-    }
-
-    iTermFileDescriptorServerLog("Calling fork");
-    pid_t pid = fork();
-    switch (pid) {
-        case -1:
-            // error
-            NSLog(@"Fork failed: %s", strerror(errno));
-            return -1;
-
-        case 0:
-            // child
-            MyLoginTTY(master, slave, serverSocketFd, deadMansPipeWriteEnd);
-            return 0;
-
-        default:
-            // parent
-            *amaster = master;
-            close(slave);
-            close(serverSocketFd);
-            close(deadMansPipeWriteEnd);
-            return pid;
     }
 }
 
@@ -448,20 +374,6 @@ static int MyForkPty(int *amaster,
     command_ = [progpath copy];
 
     env = [self environmentBySettingShell:env];
-    if ([iTermAdvancedSettingsModel runJobsInServers]) {
-        // We want to run
-        //   iTerm2 --server progpath args
-        //  So create a new args array with [ --server, progpath, *args ]
-        NSMutableArray *temp = [NSMutableArray array];
-        [temp addObject:@"--server"];
-        [temp addObject:progpath];
-        [temp addObjectsFromArray:args];
-        args = temp;
-
-        // Now change progpath to run iTerm2.
-        NSString *iterm2Binary = [[NSBundle mainBundle] executablePath];
-        progpath = iterm2Binary;
-    }
 
     path = [progpath copy];
 
@@ -504,71 +416,8 @@ static int MyForkPty(int *amaster,
     int connectionFd = -1;
     int numFileDescriptorsToPreserve;
     BOOL closeFileDescriptors = YES;
-    if ([iTermAdvancedSettingsModel runJobsInServers]) {
-        closeFileDescriptors = NO;
-        // Create a temporary filename for the unix domain socket. It'll only exist for a moment.
-        NSString *tempPath = [[NSWorkspace sharedWorkspace] temporaryFileNameWithPrefix:@"iTerm2-temp-socket."
-                                                                                 suffix:@""];
-        if (tempPath == nil) {
-            NSAlert *alert = [[[NSAlert alloc] init] autorelease];
-            alert.messageText = @"Error";
-            alert.informativeText = [NSString stringWithFormat:@"An error was encountered while creating a temporary file with mkstemps. Verify that %@ exists and is writable.", NSTemporaryDirectory()];
-            [alert addButtonWithTitle:@"OK"];
-            [alert runModal];
-            return;
-        }
-
-        // Begin listening on that path as a unix domain socket.
-        int serverSocketFd = iTermFileDescriptorServerSocketBindListen(tempPath.UTF8String);
-
-        // Get ready to run the server in a thread.
-        __block int serverConnectionFd = -1;
-        dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-
-        // In another thread, accept on the unix domain socket. Since it's
-        // already listening, there's no race here. connect will block until
-        // accept is called if the main thread wins the race. accept will block
-        // til connect is called if the background thread wins the race.
-        iTermFileDescriptorServerLog("Kicking off a background job to accept() in the server");
-        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            iTermFileDescriptorServerLog("Now running the accept queue block");
-            serverConnectionFd = iTermFileDescriptorServerAccept(serverSocketFd);
-
-            // Let the main thread go. This is necessary to ensure that
-            // serverConnectionFd is written to before the main thread uses it.
-            iTermFileDescriptorServerLog("Signal the semaphore");
-            dispatch_semaphore_signal(semaphore);
-        });
-
-        // Connect to the server running in a thread.
-        connectionFd = iTermFileDescriptorClientConnect(tempPath.UTF8String);
-        assert(connectionFd != -1);  // If this happens the block dispatched above never returns. Ran out of FDs, presumably.
-
-        // Wait for serverConnectionFd to be written to.
-        iTermFileDescriptorServerLog("Waiting for the semaphore");
-        dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
-        iTermFileDescriptorServerLog("The semaphore was signaled");
-
-        dispatch_release(semaphore);
-
-        // Remove the temporary file. The server will create a new socket file
-        // if the client dies. That file's name is dependent on its process ID,
-        // which we don't know yet, so that's why this temp file dance has to
-        // be done.
-        unlink(tempPath.UTF8String);
-
-        // Now fork. This variant of forkpty passes through the master, slave,
-        // and serverConnectionFd to the child job.
-        pipe(deadMansPipe);
-        
-        // This closes serverConnectionFd and deadMansPipe[1] in the parent process but not the child.
-        iTermFileDescriptorServerLog("Calling MyForkPty");
-        pid = _serverPid = MyForkPty(&fd, theTtyname, &term, &win, serverConnectionFd, deadMansPipe[1]);
-        numFileDescriptorsToPreserve = kNumFileDescriptorsToDup;
-    } else {
-        pid = _childPid = forkpty(&fd, theTtyname, &term, &win);
-        numFileDescriptorsToPreserve = 3;
-    }
+    pid = _childPid = forkpty(&fd, theTtyname, &term, &win);
+    numFileDescriptorsToPreserve = 3;
     if (pid == (pid_t)0) {
         // Child
         // Do not start the new process with a signal handler.

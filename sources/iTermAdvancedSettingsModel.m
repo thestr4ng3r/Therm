@@ -122,7 +122,6 @@ DEFINE_FLOAT(echoProbeDuration, 0.5, @"Terminal: Amount of time to wait while te
 DEFINE_BOOL(disablePasswordManagerAnimations, NO, @"Terminal: Disable animations for showing/hiding password manager.");
 DEFINE_BOOL(optionIsMetaForSpecialChars, YES, @"Terminal: When you press an arrow key or other function key that transmits the modifiers, should Option be translated to Meta?\nIf this is set to No then it will be translated to Alt.");
 DEFINE_BOOL(noSyncSilenceAnnoyingBellAutomatically, NO, @"Terminal: Automatically silence bell when it rings too much.");
-DEFINE_BOOL(restoreWindowContents, YES, @"Terminal: Restore window contents at startup.\nThis requires “System Prefs>General>Close windows when quitting an app” to be off.");
 DEFINE_INT(numberOfLinesForAccessibility, 1000, @"Terminal: Maximum number of lines of history to expose to Accessibility.\nAccessibility APIs can make iTerm2 slow. In order to limit the effect, you can restrict the number of lines in each session that are visible to accessibility. The last lines of each session will be made accessible.");
 DEFINE_INT(triggerRadius, 3, @"Terminal: Number of screen lines to match against trigger regular expressions.\nTrigger regular expressions are matched against the last logical line of text when a newline is received. A search is performed to find the start of the line. Since very long lines would cause performance problems, the search (and consequently the regular expression match, highlighting, and so on) is limited to this many screen lines.");
 DEFINE_BOOL(requireCmdForDraggingText, NO, @"Terminal: To drag images or selected text, you must hold ⌘. This prevents accidental drags.");
@@ -189,10 +188,6 @@ DEFINE_BOOL(logDrawingPerformance, NO, @"Debugging: Log stats about text drawing
 DEFINE_BOOL(logRestorableStateSize, NO, @"Debugging: Log restorable state size info to /tmp/statesize.*.txt.");
 
 #pragma mark - Session
-DEFINE_BOOL(runJobsInServers, YES, @"Session: Enable session restoration.\nSession restoration runs jobs in separate processes. They will survive crashes, force quits, and upgrades.\nYou must restart iTerm2 for this change to take effect.");
-DEFINE_BOOL(killJobsInServersOnQuit, YES, @"Session: User-initiated Quit (⌘Q) of iTerm2 will kill all running jobs.\nApplies only when session restoration is on.");
-DEFINE_SETTABLE_BOOL(suppressRestartAnnouncement, SuppressRestartAnnouncement, NO, @"Session: Suppress the Restart Session offer.\nWhen a sessions terminates, it will offer to restart itself. Turn this on to suppress the offer permanently.");
-DEFINE_BOOL(showSessionRestoredBanner, YES, @"Session: When restoring a session without restoring a running job, draw a banner saying “Session Restored” below the restored contents.");
 DEFINE_STRING(autoLogFormat,
               @"\\(session.creationTimeString).\\(session.name).\\(session.termid).\\(iterm2.pid).\\(session.autoLogId).log",
               @"Session: Format for automatic session log filenames.\nSee the Badges documentation for supported substitutions.");
@@ -255,7 +250,6 @@ DEFINE_BOOL(disallowCopyEmptyString, NO, @"Pasteboard: Disallow copying empty st
 DEFINE_BOOL(typingClearsSelection, YES, @"Pasteboard: Pressing a key will remove the selection.");
 DEFINE_SETTABLE_BOOL(promptForPasteWhenNotAtPrompt, PromptForPasteWhenNotAtPrompt, NO, @"Pasteboard: Warn before pasting when not at shell prompt?");
 DEFINE_SETTABLE_BOOL(noSyncSuppressClipboardAccessDeniedWarning, NoSyncSuppressClipboardAccessDeniedWarning, NO, @"Session: Suppress the notification that the terminal attempted to access the clipboard but it was denied?");
-DEFINE_SETTABLE_BOOL(noSyncSuppressMissingProfileInArrangementWarning, NoSyncSuppressMissingProfileInArrangementWarning, NO, @"Session: Suppress the notification that a restored session’s profile no longer exists?");
 DEFINE_BOOL(excludeBackgroundColorsFromCopiedStyle, NO, @"Pasteboard: Exclude background colors when text is copied with color and font style?");
 DEFINE_BOOL(includePasteHistoryInAdvancedPaste, YES, @"Pasteboard: Include paste history in the advanced paste menu.");
 

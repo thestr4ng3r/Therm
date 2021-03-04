@@ -90,16 +90,6 @@ extern NSString *kCoprocessStatusChangeNotification;
 
 - (void)logData:(const char *)buffer length:(int)length;
 
-// If [iTermAdvancedSettingsModel runJobsInServers] is on, then try for up to
-// |timeout| seconds to connect to the server. Returns YES on success.
-// If successful, it will be wired up as the task's file descriptor and process.
-- (BOOL)tryToAttachToServerWithProcessId:(pid_t)thePid;
-
-// Wire up the server as the task's file descriptor and process. The caller
-// will have connected to the server to get this info. Requires
-// [iTermAdvancedSettingsModel runJobsInServers].
-- (void)attachToServer:(iTermFileDescriptorServerConnection)serverConnection;
-
 // Clients should call this from tha main thread on a broken pipe.
 - (void)killServerIfRunning;
 

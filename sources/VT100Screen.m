@@ -4818,12 +4818,8 @@ extern BOOL unfocused;
     long long intervalOffset =
         -(linesDroppedForBrevity + [self totalScrollbackOverflow]) * (self.width + 1);
 
-    int numLines;
-    if ([iTermAdvancedSettingsModel runJobsInServers]) {
-        numLines = currentGrid_.size.height;
-    } else {
-        numLines = [currentGrid_ numberOfLinesUsed];
-    }
+    int numLines = [currentGrid_ numberOfLinesUsed];
+
     [currentGrid_ appendLines:numLines toLineBuffer:temp];
     NSMutableDictionary *dict = [[[temp dictionary] mutableCopy] autorelease];
     static NSString *const kScreenStateTabStopsKey = @"Tab Stops";
@@ -4894,12 +4890,7 @@ extern BOOL unfocused;
     }
     [linebuffer_ release];
     linebuffer_ = lineBuffer;
-    int maxLinesToRestore;
-    if ([iTermAdvancedSettingsModel runJobsInServers] && reattached) {
-        maxLinesToRestore = currentGrid_.size.height;
-    } else {
-        maxLinesToRestore = currentGrid_.size.height - 1;
-    }
+    int maxLinesToRestore = currentGrid_.size.height - 1;
     int linesRestored = MIN(MAX(0, maxLinesToRestore),
                             [lineBuffer numLinesWithWidth:self.width]);
     [currentGrid_ restoreScreenFromLineBuffer:linebuffer_

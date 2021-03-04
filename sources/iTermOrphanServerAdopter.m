@@ -30,9 +30,7 @@
 }
 
 - (instancetype)init {
-    if (![iTermAdvancedSettingsModel runJobsInServers]) {
-        return nil;
-    }
+    return nil;
     if ([[NSApplication sharedApplication] isRunningUnitTests]) {
         return nil;
     }
@@ -91,31 +89,6 @@
     } else {
         DLog(@"Failed: %s", serverConnection.error);
     }
-}
-
-- (PTYSession *)openOrphanedSession:(iTermFileDescriptorServerConnection)serverConnection
-                           inWindow:(PseudoTerminal *)desiredWindow {
-    assert([iTermAdvancedSettingsModel runJobsInServers]);
-    Profile *defaultProfile = [[ProfileModel sharedInstance] defaultBookmark];
-    PTYSession *aSession =
-        [[iTermController sharedInstance] launchBookmark:nil
-                                              inTerminal:desiredWindow
-                                                 withURL:nil
-                                        hotkeyWindowType:iTermHotkeyWindowTypeNone
-                                                 makeKey:NO
-                                             canActivate:NO
-                                                 command:nil
-                                                   block:^PTYSession *(Profile *profile, PseudoTerminal *term) {
-                                                       iTermFileDescriptorServerConnection theServerConnection = serverConnection;
-                                                       term.disablePromptForSubstitutions = YES;
-                                                       return [term createSessionWithProfile:defaultProfile
-                                                                                     withURL:nil
-                                                                               forObjectType:iTermWindowObject
-                                                                            serverConnection:&theServerConnection];
-                                                   }];
-    NSLog(@"restored an orphan");
-    [aSession showOrphanAnnouncement];
-    return aSession;
 }
 
 #pragma mark - Properties

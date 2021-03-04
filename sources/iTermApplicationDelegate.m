@@ -665,13 +665,6 @@ static BOOL hasBecomeActive = NO;
         // closing multiple sessions
         [reason addReason:[iTermPromptOnCloseReason closingMultipleSessionsPreferenceEnabled]];
     }
-    if ([iTermAdvancedSettingsModel runJobsInServers] &&
-        self.sparkleRestarting &&
-        [iTermAdvancedSettingsModel restoreWindowContents] &&
-        [[iTermController sharedInstance] willRestoreWindowsAtNextLaunch]) {
-        // Nothing will be lost so just restart without asking.
-        [reason addReason:[iTermPromptOnCloseReason noReason]];
-    }
 
     if (reason.hasReason) {
         DLog(@"Showing quit alert");
@@ -709,12 +702,6 @@ static BOOL hasBecomeActive = NO;
 
     // Prevent sessions from making their termination undoable since we're quitting.
     [[iTermController sharedInstance] setApplicationIsQuitting:YES];
-
-    if ([iTermAdvancedSettingsModel runJobsInServers]) {
-        // Restorable sessions must be killed or they'll auto-restore as orphans on the next start.
-        // If jobs aren't run in servers, they'll just die normally.
-        [[iTermController sharedInstance] killRestorableSessions];
-    }
 
     // Last chance before windows get closed.
     [[NSNotificationCenter defaultCenter] postNotificationName:iTermApplicationWillTerminate object:nil];
@@ -1043,23 +1030,7 @@ static BOOL hasBecomeActive = NO;
                                                  name:kDynamicToolsDidChange
                                                object:nil];
 
-    if ([iTermAdvancedSettingsModel runJobsInServers] &&
-        !self.isApplescriptTestApp) {
-        [PseudoTerminalRestorer setRestorationCompletionBlock:^{
-            [self restoreBuriedSessionsState];
-            if ([[iTermController sharedInstance] numberOfDecodesPending] == 0) {
-                _orphansAdopted = YES;
-                [[iTermOrphanServerAdopter sharedInstance] openWindowWithOrphans];
-            } else {
-                [[NSNotificationCenter defaultCenter] addObserver:self
-                                                         selector:@selector(itermDidDecodeWindowRestorableState:)
-                                                             name:iTermDidDecodeWindowRestorableStateNotification
-                                                           object:nil];
-            }
-        }];
-    } else {
-        [self restoreBuriedSessionsState];
-    }
+    [self restoreBuriedSessionsState];
 }
 
 - (NSMenu *)statusBarMenu {

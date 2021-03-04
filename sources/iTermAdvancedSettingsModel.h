@@ -88,7 +88,6 @@
 
 + (BOOL)alwaysAcceptFirstMouse;
 
-+ (BOOL)restoreWindowContents;
 + (BOOL)tolerateUnrecognizedTmuxCommands;
 
 + (int)maximumBytesToProvideToServices;
@@ -96,7 +95,6 @@
 + (BOOL)disableWindowSizeSnap;
 + (BOOL)eliminateCloseButtons;
 
-+ (BOOL)runJobsInServers;
 + (BOOL)killJobsInServersOnQuit;
 
 + (BOOL)noSyncDoNotWarnBeforeMultilinePaste;

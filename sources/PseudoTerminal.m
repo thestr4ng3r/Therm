@@ -7611,9 +7611,8 @@ return NO;
     if (_wellFormed) {
         [lastArrangement_ release];
         NSTimeInterval start = [NSDate timeIntervalSinceReferenceDate];
-        BOOL includeContents = [iTermAdvancedSettingsModel restoreWindowContents];
         lastArrangement_ = [[self arrangementExcludingTmuxTabs:YES
-                                             includingContents:includeContents] retain];
+                                             includingContents:false] retain];
         NSTimeInterval end = [NSDate timeIntervalSinceReferenceDate];
         DLog(@"Time to encode state for window %@: %@", self, @(end - start));
     }
@@ -7630,8 +7629,7 @@ return NO;
 
 - (PTYSession *)createSessionWithProfile:(NSDictionary *)profile
                                  withURL:(NSString *)urlString
-                           forObjectType:(iTermObjectType)objectType
-                        serverConnection:(iTermFileDescriptorServerConnection *)serverConnection {
+                           forObjectType:(iTermObjectType)objectType {
     PtyLog(@"PseudoTerminal: -createSessionWithProfile:withURL:forObjectType:");
     PTYSession *aSession;
 
@@ -7678,17 +7676,11 @@ return NO;
         [self setName:[name stringByPerformingSubstitutions:substitutions]
            forSession:aSession];
 
-        // Start the command
-        if (serverConnection) {
-            assert([iTermAdvancedSettingsModel runJobsInServers]);
-            [aSession attachToServer:*serverConnection];
-        } else {
-            [self startProgram:cmd
-                   environment:env
-                        isUTF8:isUTF8
-                     inSession:aSession
-                 substitutions:substitutions];
-        }
+        [self startProgram:cmd
+               environment:env
+                    isUTF8:isUTF8
+                 inSession:aSession
+             substitutions:substitutions];
     }
     return aSession;
 }

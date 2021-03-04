@@ -1083,35 +1083,6 @@ ITERM_WEAKLY_REFERENCEABLE
         // |contents| will be non-nil when using system window restoration.
         NSDictionary *contents = arrangement[SESSION_ARRANGEMENT_CONTENTS];
         BOOL runCommand = YES;
-        if ([iTermAdvancedSettingsModel runJobsInServers]) {
-            DLog(@"Configured to run jobs in servers");
-            // iTerm2 is currently configured to run jobs in servers, but we
-            // have to check if the arrangement was saved with that setting on.
-            if (arrangement[SESSION_ARRANGEMENT_SERVER_PID]) {
-                DLog(@"Have a server PID in the arrangement");
-                pid_t serverPid = [arrangement[SESSION_ARRANGEMENT_SERVER_PID] intValue];
-                DLog(@"Try to attach to pid %d", (int)serverPid);
-                // serverPid might be -1 if the user turned on session restoration and then quit.
-                if (serverPid != -1 && [aSession tryToAttachToServerWithProcessId:serverPid]) {
-                    DLog(@"Success!");
-                    
-                    if ([arrangement[SESSION_ARRANGEMENT_IS_TMUX_GATEWAY] boolValue]) {
-                        DLog(@"Was a tmux gateway. Start recovery mode in parser.");
-                        // Before attaching to the server we can put the parser into "tmux recovery mode".
-                        [aSession.terminal.parser startTmuxRecoveryMode];
-                    }
-                    
-                    runCommand = NO;
-                    attachedToServer = YES;
-                    aSession.shell.tty = arrangement[SESSION_ARRANGEMENT_TTY];
-                    shouldEnterTmuxMode = ([arrangement[SESSION_ARRANGEMENT_IS_TMUX_GATEWAY] boolValue] &&
-                                           arrangement[SESSION_ARRANGEMENT_TMUX_GATEWAY_SESSION_NAME] != nil &&
-                                           arrangement[SESSION_ARRANGEMENT_TMUX_GATEWAY_SESSION_ID] != nil);
-                    tmuxDCSIdentifier = arrangement[SESSION_ARRANGEMENT_TMUX_DCS_ID];
-                }
-            }
-        }
-        
         // GUID will be set for new saved arrangements since late 2014.
         // Older versions won't be able to associate saved state with windows from a saved arrangement.
         if (arrangement[SESSION_ARRANGEMENT_GUID]) {
@@ -1172,14 +1143,6 @@ ITERM_WEAKLY_REFERENCEABLE
         }
         
         DLog(@"Have contents=%@", @(contents != nil));
-        DLog(@"Restore window contents=%@", @([iTermAdvancedSettingsModel restoreWindowContents]));
-        if (contents && [iTermAdvancedSettingsModel restoreWindowContents]) {
-            DLog(@"Loading content from line buffer dictionary");
-            [aSession setContentsFromLineBufferDictionary:contents
-                                 includeRestorationBanner:runCommand
-                                               reattached:attachedToServer];
-            didRestoreContents = YES;
-        }
     } else {
         // Is a tmux pane
         NSString *title = [state objectForKey:@"title"];
@@ -1430,37 +1393,6 @@ ITERM_WEAKLY_REFERENCEABLE
     [_view updateScrollViewFrame];
     [self useTransparencyDidChange];
     return YES;
-}
-
-- (BOOL)tryToAttachToServerWithProcessId:(pid_t)serverPid {
-    if (![iTermAdvancedSettingsModel runJobsInServers]) {
-        DLog(@"Failing to attach because run jobs in servers is off");
-        return NO;
-    }
-    DLog(@"Try to attach...");
-    if ([_shell tryToAttachToServerWithProcessId:serverPid]) {
-        @synchronized(self) {
-            _registered = YES;
-        }
-        DLog(@"Success, attached.");
-        return YES;
-    } else {
-        DLog(@"Failed to attach");
-        return NO;
-    }
-}
-
-- (void)attachToServer:(iTermFileDescriptorServerConnection)serverConnection {
-    if ([iTermAdvancedSettingsModel runJobsInServers]) {
-        DLog(@"Attaching to a server...");
-        [_shell attachToServer:serverConnection];
-        [_shell setSize:_screen.size];
-        @synchronized(self) {
-            _registered = YES;
-        }
-    } else {
-        DLog(@"Can't attach to a server when runJobsInServers is off.");
-    }
 }
 
 - (void)runCommandWithOldCwd:(NSString*)oldCWD
@@ -4075,16 +4007,6 @@ static BOOL _xtermMouseReporting;
         result[SESSION_ARRANGEMENT_LIVE_SESSION] =
         [_liveSession arrangementWithContents:includeContents];
     }
-    if (includeContents && !self.isTmuxClient) {
-        // These values are used for restoring sessions after a crash. It's only saved when contents
-        // are included since saved window arrangements have no business knowing the process id.
-        if ([iTermAdvancedSettingsModel runJobsInServers] && !_shell.pidIsChild) {
-            result[SESSION_ARRANGEMENT_SERVER_PID] = @(_shell.serverPid);
-            if (self.tty) {
-                result[SESSION_ARRANGEMENT_TTY] = self.tty;
-            }
-        }
-    }
     if (self.tmuxMode == TMUX_GATEWAY && self.tmuxController.sessionName) {
         result[SESSION_ARRANGEMENT_IS_TMUX_GATEWAY] = @YES;
         result[SESSION_ARRANGEMENT_TMUX_GATEWAY_SESSION_ID] = @(self.tmuxController.sessionId);
@@ -6363,9 +6285,6 @@ verticalSpacing:(float)verticalSpacing {
 }
 
 - (void)textViewInvalidateRestorableState {
-    if ([iTermAdvancedSettingsModel restoreWindowContents]) {
-        [_delegate.realParentWindow invalidateRestorableState];
-    }
 }
 
 - (void)textViewDidFindDirtyRects {

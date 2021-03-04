@@ -73,12 +73,6 @@ static NSDictionary *gIntrospection;
     dispatch_once(&onceToken, ^{
         testing = [[NSApplication sharedApplication] isRunningUnitTests];
     });
-    if (testing) {
-        NSDictionary *overrides = @{ @"RunJobsInServers": @NO };
-        if (overrides[identifier]) {
-            return [overrides[identifier] boolValue];
-        }
-    }
 
     NSNumber *value = [[NSUserDefaults standardUserDefaults] objectForKey:identifier];
     if (!value) {

@@ -145,19 +145,6 @@ static iTermController *gSharedInstance;
           [[NSUserDefaults standardUserDefaults] boolForKey:@"NSQuitAlwaysKeepsWindows"]);
 }
 
-- (BOOL)shouldLeaveSessionsRunningOnQuit {
-    if (_willPowerOff) {
-        // For issue 4147.
-        return NO;
-    }
-    const BOOL sessionsWillRestore = ([iTermAdvancedSettingsModel runJobsInServers] &&
-                                      [iTermAdvancedSettingsModel restoreWindowContents] &&
-                                      self.willRestoreWindowsAtNextLaunch);
-    iTermApplicationDelegate *itad = [iTermApplication.sharedApplication delegate];
-    return (sessionsWillRestore &&
-            (itad.sparkleRestarting || ![iTermAdvancedSettingsModel killJobsInServersOnQuit]));
-}
-
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 
@@ -1376,12 +1363,6 @@ static iTermController *gSharedInstance;
 }
 
 - (void)killRestorableSessions {
-    assert([iTermAdvancedSettingsModel runJobsInServers]);
-    for (iTermRestorableSession *restorableSession in _restorableSessions) {
-        for (PTYSession *aSession in restorableSession.sessions) {
-            [aSession.shell sendSignal:SIGHUP];
-        }
-    }
 }
 
 // This exists because I don't trust -[NSApp keyWindow]. I've seen all kinds of weird behavior from it.
@@ -1458,9 +1439,6 @@ static iTermController *gSharedInstance;
 
 - (void)workspaceWillPowerOff:(NSNotification *)notification {
     _willPowerOff = YES;
-    if ([iTermAdvancedSettingsModel killSessionsOnLogout] && [iTermAdvancedSettingsModel runJobsInServers]) {
-        [self killRestorableSessions];
-    }
 }
 
 - (NSInteger)numberOfDecodesPending {
