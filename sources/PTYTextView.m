@@ -68,6 +68,7 @@
 #import "VT100RemoteHost.h"
 #import "VT100ScreenMark.h"
 #import "WindowControllerInterface.h"
+#include "KeyModflags.h"
 
 #import <CoreServices/CoreServices.h>
 #import <QuartzCore/QuartzCore.h>
@@ -1368,13 +1369,13 @@ static const int kDragThreshold = 3;
         [delegate queueKeyDown:event];
         return;
     }
+    unsigned int modflag = keyEventModifierFlags(event);
     if ([_delegate textViewDelegateHandlesAllKeystrokes]) {
         DLog(@"PTYTextView keyDown: in instant replay, send to delegate");
         // Delegate has special handling for this case.
         [delegate keyDown:event];
         return;
     }
-    unsigned int modflag = [event modifierFlags];
     unsigned short keyCode = [event keyCode];
     _hadMarkedTextBeforeHandlingKeypressEvent = [self hasMarkedText];
     BOOL rightAltPressed = (modflag & NSRightAlternateKeyMask) == NSRightAlternateKeyMask;
@@ -1420,7 +1421,7 @@ static const int kDragThreshold = 3;
 
 - (void)handleKeyDownEvent:(NSEvent *)event eschewCocoaTextHandling:(BOOL)eschewCocoaTextHandling {
     id delegate = [self delegate];
-    unsigned int modflag = [event modifierFlags];
+    unsigned int modflag = keyEventModifierFlags(event);
     unsigned short keyCode = [event keyCode];
     BOOL rightAltPressed = (modflag & NSRightAlternateKeyMask) == NSRightAlternateKeyMask;
     BOOL leftAltPressed = (modflag & NSAlternateKeyMask) == NSAlternateKeyMask && !rightAltPressed;

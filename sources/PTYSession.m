@@ -85,6 +85,7 @@
 #import "VT100Terminal.h"
 #import "VT100Token.h"
 #import "WindowControllerInterface.h"
+#import "KeyModflags.h"
 #import <apr-1/apr_base64.h>
 #include <stdlib.h>
 #include <sys/time.h>
@@ -5757,7 +5758,7 @@ verticalSpacing:(float)verticalSpacing {
     NSString *unmodkeystr;
     unichar unicode, unmodunicode;
     
-    modflag = [event modifierFlags];
+    modflag = keyEventModifierFlags(event);
     keystr  = [event characters];
     unmodkeystr = [event charactersIgnoringModifiers];
     if ([unmodkeystr length] == 0) {

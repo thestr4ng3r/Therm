@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		06E0C88E1DF9695400AA061B /* iTermServiceProvider.h in Headers */ = {isa = PBXBuildFile; fileRef = 06E0C88C1DF9695400AA061B /* iTermServiceProvider.h */; };
+		17799A1C25F3FB8300233767 /* KeyModflags.m in Sources */ = {isa = PBXBuildFile; fileRef = 17799A1B25F3FB8300233767 /* KeyModflags.m */; };
 		1D027C111CD1867000B0FBFF /* iTermColorPresets.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D027C0F1CD1867000B0FBFF /* iTermColorPresets.h */; };
 		1D027C121CD1867100B0FBFF /* iTermColorPresets.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D027C101CD1867000B0FBFF /* iTermColorPresets.m */; };
 		1D0318281A42563A00932107 /* iTermImageWell.h in Headers */ = {isa = PBXBuildFile; fileRef = 1D0318261A42563A00932107 /* iTermImageWell.h */; };
@@ -2386,6 +2387,8 @@
 		0464AB2F006CD2EC7F000001 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		06E0C88C1DF9695400AA061B /* iTermServiceProvider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermServiceProvider.h; sourceTree = "<group>"; };
 		06E0C88D1DF9695400AA061B /* iTermServiceProvider.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = iTermServiceProvider.m; sourceTree = "<group>"; };
+		17799A1825F3FB7400233767 /* KeyModflags.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyModflags.h; sourceTree = "<group>"; };
+		17799A1B25F3FB8300233767 /* KeyModflags.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = KeyModflags.m; sourceTree = "<group>"; };
 		17B49F7B25DEA6EC00CA0649 /* ColorPicker.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ColorPicker.xcodeproj; path = ColorPicker/ColorPicker.xcodeproj; sourceTree = "<group>"; };
 		1D027C0F1CD1867000B0FBFF /* iTermColorPresets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = iTermColorPresets.h; sourceTree = "<group>"; };
 		1D027C101CD1867000B0FBFF /* iTermColorPresets.m */ = {isa = PBXFileReference; fileEncoding = 4; indentWidth = 4; lastKnownFileType = sourcecode.c.objc; path = iTermColorPresets.m; sourceTree = "<group>"; };
@@ -4877,6 +4880,8 @@
 				A685D9F81E5B6E100091C3A7 /* PseudoTerminal+TouchBar.h */,
 				A685D9F91E5B6E100091C3A7 /* PseudoTerminal+TouchBar.m */,
 				A685D9FC1E5B6EFC0091C3A7 /* PseudoTerminal+Private.h */,
+				17799A1825F3FB7400233767 /* KeyModflags.h */,
+				17799A1B25F3FB8300233767 /* KeyModflags.m */,
 			);
 			name = Core;
 			sourceTree = "<group>";
@@ -7792,6 +7797,7 @@
 				A6C763CE1B45C53A00E3C992 /* main.m in Sources */,
 				2FB9615C20BF4A1D00E9500C /* iTermSocket.m in Sources */,
 				2FB9616020BF4A2A00E9500C /* iTermSocketIPV4Address.m in Sources */,
+				17799A1C25F3FB8300233767 /* KeyModflags.m in Sources */,
 				A6D22A431BC8BE6B004084E0 /* Model.xcdatamodeld in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

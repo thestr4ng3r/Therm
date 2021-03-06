@@ -33,9 +33,6 @@
 @class VT100Screen;
 @class VT100Terminal;
 
-#define NSLeftAlternateKeyMask  (0x000020 | NSAlternateKeyMask)
-#define NSRightAlternateKeyMask (0x000040 | NSAlternateKeyMask)
-
 // Types of characters. Used when classifying characters for word selection.
 typedef NS_ENUM(NSInteger, PTYCharType) {
     CHARTYPE_WHITESPACE,  // whitespace chars or NUL
@@ -76,7 +73,7 @@ typedef NS_ENUM(NSInteger, PTYTextViewSelectionExtensionUnit) {
 - (BOOL)xtermMouseReportingAllowMouseWheel;
 - (BOOL)isPasting;
 - (void)queueKeyDown:(NSEvent *)event;
-- (void)keyDown:(NSEvent *)event;
+- (void)keyDown:(NSEvent *)event modflag: (unsigned int)modflag;
 - (BOOL)hasActionableKeyMappingForEvent:(NSEvent *)event;
 - (int)optionKey;
 - (int)rightOptionKey;
